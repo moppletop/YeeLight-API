@@ -30,6 +30,9 @@ public class DiscoveryUDPListener implements Runnable, Closeable {
     // Marks whether or not the discovery thread is running
     private boolean running;
 
+    // A lock to prevent multiple threads attempting to bind at the same time when the socket is initialising
+    private final Object socketCreationLock = new Object();
+
     public DiscoveryUDPListener(YeeManager manager) {
         this.manager = manager;
         this.running = true;
@@ -52,6 +55,8 @@ public class DiscoveryUDPListener implements Runnable, Closeable {
                 "ST: wifi_bulb"
         );
 
+        ensureSocketConnected();
+
         socket.send(new DatagramPacket(packetData, packetData.length, address, configuration.getSearchUdpPort()));
 
         // If we should wait
@@ -67,10 +72,7 @@ public class DiscoveryUDPListener implements Runnable, Closeable {
     public void run() {
         while (running) {
             try {
-                if (socket == null) {
-                    // Here we have to pass in InetAddress.getLocalHost() otherwise the socket will bind to "localhost" not "192.168.0.x"
-                    this.socket = new DatagramSocket(manager.getConfiguration().getSearchUdpResponsePort(), InetAddress.getLocalHost());
-                }
+                ensureSocketConnected();
 
                 Arrays.fill(buffer, (byte) 0); // Wipe the buffer
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
@@ -92,6 +94,15 @@ public class DiscoveryUDPListener implements Runnable, Closeable {
                     } catch (InterruptedException ignored) {
                     }
                 }
+            }
+        }
+    }
+
+    private synchronized void ensureSocketConnected() throws IOException {
+        synchronized (socketCreationLock) {
+            if (socket == null) {
+                // Here we have to pass in InetAddress.getLocalHost() otherwise the socket will bind to "localhost" not "192.168.0.x"
+                this.socket = new DatagramSocket(manager.getConfiguration().getSearchUdpResponsePort(), InetAddress.getLocalHost());
             }
         }
     }
