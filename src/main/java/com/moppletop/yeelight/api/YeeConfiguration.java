@@ -31,7 +31,7 @@ public class YeeConfiguration {
         // but when the library is used outside of that context there's never a need, hence we have this check
         if (searchUdpPort == null && searchUdpResponsePort == null) {
             this.searchUdpPort = get(searchUdpPort, "YEE_SEARCH_UDP_PORT", 1982);
-            this.searchUdpResponsePort = get(searchUdpResponsePort, "YEE_SEARCH_UDP_RESPONSE_PORT", 25566);
+            this.searchUdpResponsePort = get(searchUdpResponsePort, "YEE_SEARCH_UDP_RESPONSE_PORT", 25567);
         } else {
             this.searchUdpPort = searchUdpPort;
             this.searchUdpResponsePort = searchUdpResponsePort;

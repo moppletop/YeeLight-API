@@ -18,11 +18,10 @@ public class DiscoveryUDPListener implements Runnable {
     private final DatagramSocket socket;
     private final byte[] buffer;
 
-    public DiscoveryUDPListener(YeeManager manager) throws SocketException {
+    public DiscoveryUDPListener(YeeManager manager) throws IOException {
         this.manager = manager;
 
-        this.socket = new DatagramSocket(manager.getConfiguration().getSearchUdpResponsePort());
-        this.socket.setSoTimeout(1000); // Don't time out the socket (I think)
+        this.socket = new DatagramSocket(manager.getConfiguration().getSearchUdpResponsePort(), InetAddress.getByName("192.168.0.7"));
 
         this.buffer = new byte[512]; // TODO don't guess this value
     }

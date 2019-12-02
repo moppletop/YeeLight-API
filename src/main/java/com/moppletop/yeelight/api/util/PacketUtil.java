@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 public class PacketUtil {
 
     public String getNewLine() {
-        return "\\r\\n";
+        return "\r\n";
     }
     private final String NEW_LINE_PATTERN = Pattern.quote(getNewLine());
 
@@ -22,6 +22,8 @@ public class PacketUtil {
         for (String keyValuePair : keyValuePairs) {
             builder.append(getNewLine()).append(keyValuePair);
         }
+
+        builder.append(getNewLine());
 
         System.out.println(builder.toString());
         return builder.toString().getBytes();
@@ -42,6 +44,11 @@ public class PacketUtil {
             }
 
             String key = line.substring(0, colonIndex);
+
+            if (colonIndex + 2 >= line.length()) {
+                continue;
+            }
+
             String value = line.substring(colonIndex + 2); // +2 to skip the colon and the extra space
 
             packet.put(key, value);

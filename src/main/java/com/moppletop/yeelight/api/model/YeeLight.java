@@ -15,7 +15,7 @@ public class YeeLight {
     public static YeeLight of(Map<String, String> packet) {
         // TODO do we want to handle exceptions?
         return builder()
-                .id(parseInt(packet.get("id"), 16))
+                .id(parseInt(packet.get("id").substring(2), 16))
                 .cacheControl(packet.get("Cache-Control"))
                 .location(packet.get("Location"))
                 .server(packet.get("Server"))

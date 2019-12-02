@@ -33,14 +33,15 @@ public class YeeManager {
     public void start() {
         try {
             discoveryUDPListener = new DiscoveryUDPListener(this);
-        } catch (SocketException e) {
+        }
+        catch (IOException e) {
             e.printStackTrace();
         }
 
         Thread thread = new Thread(discoveryUDPListener);
         thread.setName("YeeLight - UDP Listener");
         thread.setDaemon(true);
-//        thread.start();
+        thread.start();
     }
 
     public boolean registerLight(YeeLight light) throws IOException {

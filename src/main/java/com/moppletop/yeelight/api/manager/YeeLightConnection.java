@@ -51,6 +51,10 @@ public class YeeLightConnection implements Runnable, Closeable {
 
     @Override
     public void close() throws IOException {
+        if (socket == null) {
+            return;
+        }
+
         synchronized (socketLock) {
             System.out.println("Socket closed for " + light.getId());
             socket.close();
