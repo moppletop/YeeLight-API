@@ -1,9 +1,6 @@
 package com.moppletop.yeelight.api;
 
-import com.moppletop.yeelight.api.model.YeeColourFlow;
-import com.moppletop.yeelight.api.model.YeeDuration;
-import com.moppletop.yeelight.api.model.YeeLight;
-import com.moppletop.yeelight.api.model.YeePowerMode;
+import com.moppletop.yeelight.api.model.*;
 import com.moppletop.yeelight.api.music.MusicServer;
 import com.moppletop.yeelight.api.util.ColourUtil;
 
@@ -16,7 +13,11 @@ public interface YeeApi {
         Manager operations
      */
 
-    void discoverLights() throws IOException;
+    default void discoverLights() throws IOException {
+        discoverLights(1000);
+    }
+
+    void discoverLights(int millisToWait) throws IOException;
 
     YeeLight getLightBy(int id);
 
@@ -60,11 +61,7 @@ public interface YeeApi {
 
     void setSleepTimer(int id, int minutesUntilSleep);
 
-    // TODO maybe add the get? gonna involve fucking around with the async tcp stuff
-
     void removeSleepTimer(int id);
-
-    // TODO is adjust worth adding since we always have maintain state locally?
 
     void enableMusicMode(int id, MusicServer musicServer);
 

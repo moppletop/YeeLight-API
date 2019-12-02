@@ -32,7 +32,7 @@ public class PacketUtil {
     public Map<String, String> deserialisePacket(byte[] packetData) {
         Map<String, String> packet = new HashMap<>(32);
 
-        String asString = new String(packetData).trim();
+        String asString = new String(packetData);
         String[] split = asString.split(NEW_LINE_PATTERN);
         int colonIndex;
 
@@ -44,12 +44,13 @@ public class PacketUtil {
             }
 
             String key = line.substring(0, colonIndex);
+            colonIndex += 2; // +2 to skip the colon and the extra space
 
-            if (colonIndex + 2 >= line.length()) {
+            if (colonIndex >= line.length()) {
                 continue;
             }
 
-            String value = line.substring(colonIndex + 2); // +2 to skip the colon and the extra space
+            String value = line.substring(colonIndex);
 
             packet.put(key, value);
         }
@@ -57,6 +58,7 @@ public class PacketUtil {
         return packet;
     }
 
+    // Bit of a terrible hack to get the end of the packet
     public boolean isEndOfPacket(CharSequence sequence) {
         return sequence.length() > 4 && sequence.subSequence(sequence.length() - 4, sequence.length()).equals(getNewLine());
     }

@@ -25,7 +25,6 @@ public class YeeApiBuilder {
         }
 
         YeeManager manager = new YeeManager(configuration, jsonProvider);
-        manager.start();
 
         if (autoDiscovery) {
             manager.discoverLights();

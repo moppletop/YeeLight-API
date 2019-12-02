@@ -40,7 +40,6 @@ public enum YeeCommandType {
     public static YeeCommandType[] of(String[] methodNames) {
         List<YeeCommandType> commandTypes = new ArrayList<>();
 
-        // TODO can this be done with streams?
         for (String name : methodNames) {
             for (YeeCommandType commandType : values()) {
                 if (commandType.methodName.equals(name)) {

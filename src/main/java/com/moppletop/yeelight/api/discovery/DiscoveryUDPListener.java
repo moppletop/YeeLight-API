@@ -1,35 +1,50 @@
 package com.moppletop.yeelight.api.discovery;
 
 import com.moppletop.yeelight.api.YeeConfiguration;
-import com.moppletop.yeelight.api.model.YeeLight;
 import com.moppletop.yeelight.api.manager.YeeManager;
+import com.moppletop.yeelight.api.model.YeeLight;
 import com.moppletop.yeelight.api.util.PacketUtil;
+import lombok.extern.slf4j.Slf4j;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketException;
 import java.util.Arrays;
 
-public class DiscoveryUDPListener implements Runnable {
+/**
+ * This class handles discovery of new lights on the network.
+ * When this class is initialised a response listening thread is started which will await for a response
+ */
+@Slf4j
+public class DiscoveryUDPListener implements Runnable, Closeable {
 
     private final YeeManager manager;
-    private final DatagramSocket socket;
-    private final byte[] buffer;
 
-    public DiscoveryUDPListener(YeeManager manager) throws IOException {
+    // The packet read buffer
+    private final byte[] buffer = new byte[512];
+
+    // The socket used for sending and receiving multi-cast UDP discovery packets
+    private DatagramSocket socket;
+    // Marks whether or not the discovery thread is running
+    private boolean running;
+
+    public DiscoveryUDPListener(YeeManager manager) {
         this.manager = manager;
+        this.running = true;
 
-        this.socket = new DatagramSocket(manager.getConfiguration().getSearchUdpResponsePort(), InetAddress.getByName("192.168.0.7"));
-
-        this.buffer = new byte[512]; // TODO don't guess this value
+        Thread thread = new Thread(this);
+        thread.setName("YeeLight - UDP Listener #" + manager.getConfiguration().getSearchUdpResponsePort());
+        thread.setDaemon(true);
+        thread.start();
     }
 
-    public void discoverLights() throws IOException {
+    public void discoverLights(int millisToWait) throws IOException {
         YeeConfiguration configuration = manager.getConfiguration();
         InetAddress address = InetAddress.getByName(configuration.getSearchUdpAddress());
 
+        // Build the SSDP-like request to discover lights on the network
         byte[] packetData = PacketUtil.serialisePacket(
                 "M-SEARCH",
                 "HOST: " + configuration.getSearchUdpAddress() + ':' + configuration.getSearchUdpPort(),
@@ -38,28 +53,55 @@ public class DiscoveryUDPListener implements Runnable {
         );
 
         socket.send(new DatagramPacket(packetData, packetData.length, address, configuration.getSearchUdpPort()));
+
+        // If we should wait
+        if (millisToWait > 0) {
+            try {
+                Thread.sleep(millisToWait);
+            } catch (InterruptedException ignored) {
+            }
+        }
     }
 
     @Override
     public void run() {
-        while (!socket.isClosed()) {
+        while (running) {
             try {
-                Arrays.fill(buffer, (byte) ' '); // TODO is white-spacing/trimming really the best way to do this?
+                if (socket == null) {
+                    // Here we have to pass in InetAddress.getLocalHost() otherwise the socket will bind to "localhost" not "192.168.0.x"
+                    this.socket = new DatagramSocket(manager.getConfiguration().getSearchUdpResponsePort(), InetAddress.getLocalHost());
+                }
+
+                Arrays.fill(buffer, (byte) 0); // Wipe the buffer
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 
                 socket.receive(packet);
 
-                InetAddress address = packet.getAddress();
-                int port = packet.getPort();
-
-                System.out.println(String.format("Received a UDP packet from %s:%s of size %s", address.getHostAddress(), port, packet.getData().length));
+                log.debug("Received a UDP packet from {}:{}", packet.getAddress().getHostAddress(), packet.getPort());
 
                 YeeLight light = YeeLight.of(PacketUtil.deserialisePacket(packet.getData()));
-                System.out.println(light);
                 manager.registerLight(light);
-            } catch (IOException ex) {
-                ex.printStackTrace();
+            } catch (Exception ex) {
+                if (running) {
+                    log.error("UDP Discovery Thread threw an exception while running, backing off and attempting to rebind if still running", ex);
+
+                    socket = null;
+                    // Back-off for 50ms and try and rebind
+                    try {
+                        Thread.sleep(50);
+                    } catch (InterruptedException ignored) {
+                    }
+                }
             }
+        }
+    }
+
+    // Closes the socket and lets the thread finish
+    @Override
+    public void close() {
+        if (socket != null) {
+            running = false;
+            socket.close();
         }
     }
 }

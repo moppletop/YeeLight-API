@@ -14,10 +14,6 @@ public class YeeColourFlow {
         RESTORE_STATE, REMAIN_AT_STATE, TURN_OFF
     }
 
-//    public enum YeeColourFlowStateMode {
-//        COLOUR, COLOUR_TEMPERATURE, SLEEP
-//    }
-
     @Getter
     @RequiredArgsConstructor
     public static class YeeColourFlowState {

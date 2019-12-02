@@ -7,6 +7,5 @@ public enum YeePowerMode {
     RGB,
     HSV,
     COLOUR_FLOW;
-    // TODO night mode?
 
 }

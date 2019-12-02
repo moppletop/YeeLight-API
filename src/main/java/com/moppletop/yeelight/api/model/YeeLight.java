@@ -13,7 +13,6 @@ import static java.lang.Integer.parseInt;
 public class YeeLight {
 
     public static YeeLight of(Map<String, String> packet) {
-        // TODO do we want to handle exceptions?
         return builder()
                 .id(parseInt(packet.get("id").substring(2), 16))
                 .cacheControl(packet.get("Cache-Control"))
@@ -61,9 +60,6 @@ public class YeeLight {
     private String flowParameters;
     private int sleepTimer;
     private boolean musicMode;
-
-    // TODO possibly implement background light support?
-    // TODO night mode?
 
     public String getHost() {
         return location.substring(location.lastIndexOf('/') + 1, location.lastIndexOf(':'));

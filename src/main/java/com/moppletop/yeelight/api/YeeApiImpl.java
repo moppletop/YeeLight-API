@@ -23,8 +23,8 @@ public class YeeApiImpl implements YeeApi {
     private final YeeManager manager;
 
     @Override
-    public void discoverLights() throws IOException {
-        manager.discoverLights();
+    public void discoverLights(int millisToWait) throws IOException {
+        manager.discoverLights(millisToWait);
     }
 
     @Override

@@ -1,22 +1,23 @@
 package com.moppletop.yeelight.api.manager;
 
 import com.moppletop.yeelight.api.YeeConfiguration;
-import com.moppletop.yeelight.api.json.JSONProvider;
 import com.moppletop.yeelight.api.discovery.DiscoveryUDPListener;
+import com.moppletop.yeelight.api.json.JSONProvider;
 import com.moppletop.yeelight.api.model.YeeCommand;
 import com.moppletop.yeelight.api.model.YeeLight;
 import com.moppletop.yeelight.api.model.YeeResponse;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.net.SocketException;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-@RequiredArgsConstructor
+/**
+ * The central manager class for all lights
+ */
+@Slf4j
 public class YeeManager {
 
     @Getter
@@ -24,40 +25,34 @@ public class YeeManager {
     @Getter
     private final JSONProvider jsonProvider;
 
+    private final DiscoveryUDPListener discoveryUDPListener;
+
     @Getter
     private final Map<Integer, YeeLightConnection> lights = new LinkedHashMap<>();
-    private final Map<Integer, YeeCommand> inFlightCommands = new HashMap<>();
 
-    private DiscoveryUDPListener discoveryUDPListener;
-
-    public void start() {
-        try {
-            discoveryUDPListener = new DiscoveryUDPListener(this);
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        Thread thread = new Thread(discoveryUDPListener);
-        thread.setName("YeeLight - UDP Listener");
-        thread.setDaemon(true);
-        thread.start();
+    public YeeManager(YeeConfiguration configuration, JSONProvider jsonProvider) {
+        this.configuration = configuration;
+        this.jsonProvider = jsonProvider;
+        this.discoveryUDPListener = new DiscoveryUDPListener(this);
     }
 
-    public boolean registerLight(YeeLight light) throws IOException {
-        YeeLightConnection newConnection = new YeeLightConnection(this, light);
-        YeeLightConnection oldConnection = lights.put(light.getId(), newConnection);
-
-        if (oldConnection != null) {
-            oldConnection.close();
+    /**
+     * Adds a light to the managed list of lights
+     *
+     * @param light the light to manage
+     * @return true if the light was not managed
+     */
+    public boolean registerLight(YeeLight light) {
+        if (lights.containsKey(light.getId())) {
             return false;
         }
 
+        lights.put(light.getId(), new YeeLightConnection(this, light));
         return true;
     }
 
-    public void discoverLights() throws IOException {
-        discoveryUDPListener.discoverLights();
+    public void discoverLights(int millisToWait) throws IOException {
+        discoveryUDPListener.discoverLights(millisToWait);
     }
 
     @SneakyThrows
@@ -68,26 +63,21 @@ public class YeeManager {
             throw new IllegalArgumentException("There is no light registered with id " + id);
         } else {
             connection.send(command);
-            inFlightCommands.put(command.getId(), command);
         }
     }
 
     public void readCommand(YeeLight light, YeeResponse response) {
         if (response.isError()) {
-            System.err.println(response); // TODO error handling?
+            log.error("Result [ERROR] {}", response);
         } else if (response.isNotification()) {
-            System.out.println("Notification " + response);
+            log.debug("Notification " + response);
+
+            // If we've received a Notification (state change), update our local state
             response.getParams().forEach(light::setByParameter);
         } else if (response.isResult()) {
-            System.out.println("Result " + response);
-            YeeCommand command = inFlightCommands.remove(response.getId());
-
-            // TODO do we need to update our state here? or can we just rely on the Notification?
-            if (command == null) {
-                System.err.println("Got a response for a command we didn't send " + response);
-            }
+            log.debug("Result " + response);
         } else {
-            System.err.println("Invalid response " + response);
+            log.error("Invalid response " + response);
         }
     }
 }
