@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class BuilderTesting {
+class BuilderTest {
 
     @Test
     void noJsonProvider() {

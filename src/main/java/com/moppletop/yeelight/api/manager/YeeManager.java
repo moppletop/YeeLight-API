@@ -1,6 +1,7 @@
 package com.moppletop.yeelight.api.manager;
 
 import com.moppletop.yeelight.api.YeeConfiguration;
+import com.moppletop.yeelight.api.YeeException;
 import com.moppletop.yeelight.api.discovery.DiscoveryUDPListener;
 import com.moppletop.yeelight.api.json.JSONProvider;
 import com.moppletop.yeelight.api.model.YeeCommand;
@@ -40,7 +41,7 @@ public class YeeManager {
      * Adds a light to the managed list of lights
      *
      * @param light the light to manage
-     * @return true if the light was not managed
+     * @return true if the light was not already managed
      */
     public boolean registerLight(YeeLight light) {
         if (lights.containsKey(light.getId())) {
@@ -51,10 +52,23 @@ public class YeeManager {
         return true;
     }
 
-    public void discoverLights(int millisToWait) throws IOException {
-        discoveryUDPListener.discoverLights(millisToWait);
+    /**
+     * @see com.moppletop.yeelight.api.YeeApi#discoverLights(int)
+     */
+    public void discoverLights(int millisToWait) {
+        try {
+            discoveryUDPListener.discoverLights(millisToWait);
+        } catch (IOException e) {
+            throw new YeeException(e);
+        }
     }
 
+    /**
+     * Sends a command to a light
+     *
+     * @param id the id of the light
+     * @param command the command to send
+     */
     @SneakyThrows
     public void sendCommand(int id, YeeCommand command) {
         YeeLightConnection connection = lights.get(id);
@@ -66,18 +80,36 @@ public class YeeManager {
         }
     }
 
-    public void readCommand(YeeLight light, YeeResponse response) {
+    /**
+     * Interprets a response from a light and updates it's internal state if needed
+     *
+     * @param light the light the response is for
+     * @param response the response
+     */
+    public void readResponse(YeeLight light, YeeResponse response) {
         if (response.isError()) {
-            log.error("Result [ERROR] {}", response);
+            log.error("Result {}", response);
         } else if (response.isNotification()) {
-            log.debug("Notification " + response);
+            log.debug("Notification {}", response);
 
             // If we've received a Notification (state change), update our local state
             response.getParams().forEach(light::setByParameter);
         } else if (response.isResult()) {
-            log.debug("Result " + response);
+            log.debug("Result {}", response);
         } else {
-            log.error("Invalid response " + response);
+            log.error("Invalid response {}", response);
+        }
+    }
+
+    public void shutdown() throws YeeException {
+        discoveryUDPListener.close();
+
+        for (YeeLightConnection connection : lights.values()) {
+            try {
+                connection.close();
+            } catch (IOException e) {
+                throw new YeeException(e);
+            }
         }
     }
 }

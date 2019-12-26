@@ -4,16 +4,17 @@ import com.moppletop.yeelight.api.json.JSONProvider;
 import com.moppletop.yeelight.api.model.YeeCommand;
 import com.moppletop.yeelight.api.model.YeeResponse;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Collections;
 
+@Slf4j
 public class TestTCPServer implements Runnable, Closeable {
 
     private final ServerSocket serverSocket;
@@ -21,7 +22,7 @@ public class TestTCPServer implements Runnable, Closeable {
 
     @SneakyThrows
     public TestTCPServer(int port, JSONProvider jsonProvider) {
-        this.serverSocket = new ServerSocket(port, 0, InetAddress.getLocalHost());
+        this.serverSocket = new ServerSocket(port);
         this.serverSocket.setSoTimeout(0);
         this.jsonProvider = jsonProvider;
 
@@ -44,7 +45,7 @@ public class TestTCPServer implements Runnable, Closeable {
             builder.append((char) buffer);
 
             if (PacketUtil.isEndOfPacket(builder)) {
-                System.out.println(builder);
+                log.info("{}", builder);
 
                 YeeCommand command = jsonProvider.deserialise(builder.toString(), YeeCommand.class);
                 YeeResponse response = new YeeResponse(command.getId(), null, new Object[] {"ok"}, null, null);
@@ -55,7 +56,7 @@ public class TestTCPServer implements Runnable, Closeable {
                 outputStream.write(PacketUtil.getNewLine().getBytes());
                 outputStream.flush();
 
-                response = new YeeResponse(null, "props", null, Collections.singletonMap("ct", command.getParams()[0].toString()), null);
+                response = new YeeResponse(command.getId(), "props", null, Collections.singletonMap("ct", command.getParams()[0].toString()), null);
 
                 outputStream.write(jsonProvider.serialise(response).getBytes());
                 outputStream.write(PacketUtil.getNewLine().getBytes());

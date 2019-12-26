@@ -26,17 +26,6 @@ public enum YeeCommandType {
     SET_NAME("set_name")
     ;
 
-    public static YeeCommandType of(String methodName) {
-        for (YeeCommandType commandType : values()) {
-            if (commandType.methodName.equals(methodName)) {
-                return commandType;
-            }
-        }
-
-        System.err.println("Unknown command type: " + methodName);
-        return null;
-    }
-
     public static YeeCommandType[] of(String[] methodNames) {
         List<YeeCommandType> commandTypes = new ArrayList<>();
 

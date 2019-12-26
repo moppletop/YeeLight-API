@@ -10,7 +10,7 @@ import static java.lang.Integer.parseInt;
 @Getter
 @EqualsAndHashCode
 @ToString
-public class YeeLight {
+public class YeeLight implements Cloneable {
 
     public static YeeLight of(Map<String, String> packet) {
         return builder()
@@ -110,37 +110,12 @@ public class YeeLight {
         }
     }
 
-    void setByResult(YeeCommandType operation, Object[] params) {
-        switch (operation) {
-            case SET_TEMPERATURE:
-                temperature = (int) params[0];
-                break;
-            case SET_RGB:
-                rgb = (int) params[0];
-                break;
-            case SET_HSV:
-                hue = (int) params[0];
-                saturation = (int) params[1];
-                break;
-            case SET_BRIGHTNESS:
-                brightness = (int) params[0];
-                break;
-            case SET_POWER:
-                powered = isPowered((String) params[0]);
-                colourMode = YeeColourMode.fromId((Integer) params[3]);
-                break;
-            case TOGGLE:
-                powered = !powered;
-                break;
-            case START_COLOUR_FLOW:
-                flowing = true;
-                flowParameters = (String) params[2];
-                break;
-            case STOP_COLOUR_FLOW:
-                flowing = false;
-                flowParameters = null;
-                break;
+    @Override
+    public YeeLight clone() {
+        try {
+            return (YeeLight) super.clone();
+        } catch (CloneNotSupportedException e) {
+            return null;
         }
     }
-
 }

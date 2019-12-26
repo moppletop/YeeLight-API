@@ -71,7 +71,9 @@ public class YeeLightConnection implements Runnable, Closeable {
                     }
                 }
             } catch (Exception ex) {
-                log.error("{}'s thread threw an exception while running, backing off until a new command is sent", light.getId(), ex);
+                if (running) {
+                    log.error("{}'s thread threw an exception while running, backing off until a new command is sent", light.getId(), ex);
+                }
             }
         }
     }
@@ -119,6 +121,6 @@ public class YeeLightConnection implements Runnable, Closeable {
 
         // Deserialise the packet into the response object
         YeeResponse response = manager.getJsonProvider().deserialise(packet, YeeResponse.class);
-        manager.readCommand(light, response);
+        manager.readResponse(light, response);
     }
 }

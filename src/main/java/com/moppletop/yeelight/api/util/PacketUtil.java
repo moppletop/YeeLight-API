@@ -1,12 +1,14 @@
 package com.moppletop.yeelight.api.util;
 
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
 @UtilityClass
+@Slf4j
 public class PacketUtil {
 
     public String getNewLine() {
@@ -25,7 +27,7 @@ public class PacketUtil {
 
         builder.append(getNewLine());
 
-        System.out.println(builder.toString());
+        log.debug("{}", builder);
         return builder.toString().getBytes();
     }
 
@@ -60,6 +62,6 @@ public class PacketUtil {
 
     // Bit of a terrible hack to get the end of the packet
     public boolean isEndOfPacket(CharSequence sequence) {
-        return sequence.length() > 4 && sequence.subSequence(sequence.length() - 4, sequence.length()).equals(getNewLine());
+        return sequence.length() > 4 && sequence.subSequence(sequence.length() - 2, sequence.length()).equals(getNewLine());
     }
 }

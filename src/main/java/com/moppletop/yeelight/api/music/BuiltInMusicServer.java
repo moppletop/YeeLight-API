@@ -4,6 +4,7 @@ import com.moppletop.yeelight.api.manager.YeeLightConnection;
 import com.moppletop.yeelight.api.manager.YeeManager;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -13,6 +14,7 @@ import java.net.Socket;
 import java.util.LinkedList;
 
 @Getter
+@Slf4j
 public class BuiltInMusicServer implements MusicServer, Runnable, Closeable {
 
     private final YeeManager manager;
@@ -50,7 +52,7 @@ public class BuiltInMusicServer implements MusicServer, Runnable, Closeable {
                 Socket socket = serverSocket.accept();
 
                 if (expectedConnections.isEmpty()) {
-                    System.err.println("We weren't expecting a connection but received one from " + socket.getInetAddress().getHostAddress());
+                    log.error("We weren't expecting a connection but received one from {}", socket.getInetAddress().getHostAddress());
                     continue;
                 }
 

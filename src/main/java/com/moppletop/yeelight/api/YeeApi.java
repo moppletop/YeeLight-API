@@ -13,11 +13,11 @@ public interface YeeApi {
         Manager operations
      */
 
-    default void discoverLights() throws IOException {
+    default void discoverLights() throws YeeException {
         discoverLights(1000);
     }
 
-    void discoverLights(int millisToWait) throws IOException;
+    void discoverLights(int millisToWait) throws YeeException;
 
     YeeLight getLightBy(int id);
 
@@ -25,7 +25,7 @@ public interface YeeApi {
 
     MusicServer createRemoteMusicServer(String host, int port);
 
-    MusicServer createBuiltInMusicServer(int port) throws IOException;
+    MusicServer createBuiltInMusicServer(int port) throws YeeException;
 
     /*
         Light operations

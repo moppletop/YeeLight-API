@@ -23,20 +23,20 @@ public class YeeApiImpl implements YeeApi {
     private final YeeManager manager;
 
     @Override
-    public void discoverLights(int millisToWait) throws IOException {
+    public void discoverLights(int millisToWait) throws YeeException {
         manager.discoverLights(millisToWait);
     }
 
     @Override
     public YeeLight getLightBy(int id) {
         YeeLightConnection connection = manager.getLights().get(id);
-        return connection == null ? null : connection.getLight();
+        return connection == null ? null : connection.getLight().clone();
     }
 
     @Override
     public Collection<YeeLight> getLights() {
         return manager.getLights().values().stream()
-                .map(YeeLightConnection::getLight)
+                .map(connection -> connection.getLight().clone())
                 .collect(Collectors.toList());
     }
 
@@ -46,8 +46,12 @@ public class YeeApiImpl implements YeeApi {
     }
 
     @Override
-    public MusicServer createBuiltInMusicServer(int port) throws IOException {
-        return new BuiltInMusicServer(manager, port);
+    public MusicServer createBuiltInMusicServer(int port) throws YeeException {
+        try {
+            return new BuiltInMusicServer(manager, port);
+        } catch (IOException e) {
+            throw new YeeException(e);
+        }
     }
 
     @Override
