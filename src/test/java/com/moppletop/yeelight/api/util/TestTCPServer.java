@@ -1,6 +1,6 @@
 package com.moppletop.yeelight.api.util;
 
-import com.moppletop.yeelight.api.json.JSONProvider;
+import com.moppletop.yeelight.api.json.JSONSerialiser;
 import com.moppletop.yeelight.api.model.YeeCommand;
 import com.moppletop.yeelight.api.model.YeeResponse;
 import lombok.SneakyThrows;
@@ -18,10 +18,10 @@ import java.util.Collections;
 public class TestTCPServer implements Runnable, Closeable {
 
     private final ServerSocket serverSocket;
-    private final JSONProvider jsonProvider;
+    private final JSONSerialiser jsonProvider;
 
     @SneakyThrows
-    public TestTCPServer(int port, JSONProvider jsonProvider) {
+    public TestTCPServer(int port, JSONSerialiser jsonProvider) {
         this.serverSocket = new ServerSocket(port);
         this.serverSocket.setSoTimeout(0);
         this.jsonProvider = jsonProvider;
@@ -48,7 +48,7 @@ public class TestTCPServer implements Runnable, Closeable {
                 log.info("{}", builder);
 
                 YeeCommand command = jsonProvider.deserialise(builder.toString(), YeeCommand.class);
-                YeeResponse response = new YeeResponse(command.getId(), null, new Object[] {"ok"}, null, null);
+                YeeResponse response = new YeeResponse(command.getId(), null, new Object[]{"ok"}, null, null);
 
                 OutputStream outputStream = socket.getOutputStream();
 

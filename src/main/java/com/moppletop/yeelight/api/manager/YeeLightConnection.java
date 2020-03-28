@@ -1,5 +1,6 @@
 package com.moppletop.yeelight.api.manager;
 
+import com.moppletop.yeelight.api.YeeException;
 import com.moppletop.yeelight.api.model.YeeCommand;
 import com.moppletop.yeelight.api.model.YeeLight;
 import com.moppletop.yeelight.api.model.YeeResponse;
@@ -106,7 +107,13 @@ public class YeeLightConnection implements Runnable, Closeable {
         ensureSocketConnected();
 
         // Serialise our packet into JSON
-        String packet = manager.getJsonProvider().serialise(command);
+        String packet;
+
+        try {
+            packet = manager.getJsonSerialiser().serialise(command);
+        } catch (Exception ex) {
+            throw new YeeException(ex);
+        }
 
         log.debug("Sending {} to light {}", packet, light.getId());
 
@@ -120,7 +127,14 @@ public class YeeLightConnection implements Runnable, Closeable {
         log.debug("Received {} from light {}", packet, light.getId());
 
         // Deserialise the packet into the response object
-        YeeResponse response = manager.getJsonProvider().deserialise(packet, YeeResponse.class);
+        YeeResponse response;
+
+        try {
+            response = manager.getJsonSerialiser().deserialise(packet, YeeResponse.class);
+        } catch (Exception ex) {
+            throw new YeeException(ex);
+        }
+
         manager.readResponse(light, response);
     }
 }

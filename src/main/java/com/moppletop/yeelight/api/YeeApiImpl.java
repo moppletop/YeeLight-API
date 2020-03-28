@@ -1,10 +1,9 @@
 package com.moppletop.yeelight.api;
 
-import com.moppletop.yeelight.api.model.YeeColourFlow;
-import com.moppletop.yeelight.api.model.YeeColourFlow.YeeColourFlowState;
 import com.moppletop.yeelight.api.manager.YeeLightConnection;
 import com.moppletop.yeelight.api.manager.YeeManager;
 import com.moppletop.yeelight.api.model.*;
+import com.moppletop.yeelight.api.model.YeeColourFlow.YeeColourFlowState;
 import com.moppletop.yeelight.api.music.BuiltInMusicServer;
 import com.moppletop.yeelight.api.music.MusicServer;
 import com.moppletop.yeelight.api.music.RemoteMusicServer;

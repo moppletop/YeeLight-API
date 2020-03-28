@@ -14,6 +14,7 @@ public class PacketUtil {
     public String getNewLine() {
         return "\r\n";
     }
+
     private final String NEW_LINE_PATTERN = Pattern.quote(getNewLine());
 
     public byte[] serialisePacket(String type, String... keyValuePairs) {

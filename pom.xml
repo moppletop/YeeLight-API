@@ -6,7 +6,7 @@
 
     <groupId>com.moppletop</groupId>
     <artifactId>yeelight-api</artifactId>
-    <version>1.0.1</version>
+    <version>1.1.0</version>
 
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -20,7 +20,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.16.22</version>
+            <version>1.18.12</version>
         </dependency>
 
         <dependency>

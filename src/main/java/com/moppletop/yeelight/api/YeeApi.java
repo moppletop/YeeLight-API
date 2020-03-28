@@ -1,10 +1,12 @@
 package com.moppletop.yeelight.api;
 
-import com.moppletop.yeelight.api.model.*;
+import com.moppletop.yeelight.api.model.YeeColourFlow;
+import com.moppletop.yeelight.api.model.YeeDuration;
+import com.moppletop.yeelight.api.model.YeeLight;
+import com.moppletop.yeelight.api.model.YeePowerMode;
 import com.moppletop.yeelight.api.music.MusicServer;
 import com.moppletop.yeelight.api.util.ColourUtil;
 
-import java.io.IOException;
 import java.util.Collection;
 
 public interface YeeApi {

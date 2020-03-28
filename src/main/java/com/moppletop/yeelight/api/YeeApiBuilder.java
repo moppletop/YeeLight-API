@@ -1,6 +1,6 @@
 package com.moppletop.yeelight.api;
 
-import com.moppletop.yeelight.api.json.JSONProvider;
+import com.moppletop.yeelight.api.json.JSONSerialiser;
 import com.moppletop.yeelight.api.manager.YeeManager;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -11,7 +11,7 @@ import lombok.experimental.Accessors;
 public class YeeApiBuilder {
 
     private YeeConfiguration configuration;
-    private JSONProvider jsonProvider;
+    private JSONSerialiser jsonSerialiser;
     private boolean autoDiscovery = true;
 
     @SneakyThrows
@@ -20,11 +20,11 @@ public class YeeApiBuilder {
             configuration = YeeConfiguration.emptyConfig();
         }
 
-        if (jsonProvider == null) {
-            throw new IllegalArgumentException("An implementation of JSONProvider must be set in the builder through .jsonProvider(...)");
+        if (jsonSerialiser == null) {
+            throw new IllegalArgumentException("An implementation of JSONSerialiser must be set in the builder through .jsonSerialiser(...)");
         }
 
-        YeeManager manager = new YeeManager(configuration, jsonProvider);
+        YeeManager manager = new YeeManager(configuration, jsonSerialiser);
 
         if (autoDiscovery) {
             manager.discoverLights(1000);

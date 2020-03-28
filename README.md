@@ -23,18 +23,18 @@ Well at the moment you'll have to build it yourself, I'll try and get this in ma
         // you will have to implement these two methods yourself with your library of choice.
         // Though the implementation used MUST support the class schema not
         // matching the JSON exactly and vice-versa, any unknowns should be set to null
-        // There is an example of how to use this class in the tests: com.moppletop.yeelight.api.util.JacksonJSONProvider
-        builder.jsonProvider(new JSONProvider() {
+        // There is an example of how to use this class in the tests: com.moppletop.yeelight.api.util.JacksonJSONSerialiser
+        builder.jsonSerialiser(new JSONSerialiser() {
             @Override
-            public String serialise(Object obj) {
+            public String serialise(Object obj) throws Exception {
                 return ...;
             }
 
             @Override
-            public <T> T deserialise(String json, Class<T> classOfT) {
+            public <T> T deserialise(String json, Class<T> classOfT) throws Exception  {
                 return ...;
             }
-        })
+        });
                 
         // Here you can override YeeLight specific configurations
         // For 99% of uses this isn't needed as the defaults are either
@@ -45,11 +45,11 @@ Well at the moment you'll have to build it yourself, I'll try and get this in ma
                 .searchUdpAddress("239.255.255.250") // YEE_SEARCH_UDP_ADDRESS
                 .searchUdpPort(1982)                 // YEE_SEARCH_UDP_PORT
                 .searchUdpResponsePort(1983)         // YEE_SEARCH_UDP_RESPONSE_PORT
-                .build())
+                .build());
                 
         // When calling .build(), if this is true. api.discoverLights with a timeout of 1000ms
         // will be called automatically, set to false if you want to handle this yourself
-        builder.autoDiscovery(true)
+        builder.autoDiscovery(true);
         
         // Finalises the build and starts the UDP discovery thread
         YeeApi api = builder.build();
@@ -73,10 +73,9 @@ Well at the moment you'll have to build it yourself, I'll try and get this in ma
             // handle error
         }
         
-        // getLights() returns an immutable collection of all lights currently known to the library
-        // Due to how internally these lights are managed. Do not cache the instance of YeeLight as
-        // it's underlying object may change without warning meaning the state will not be updated,
-        // always use getLights() or getLight(int id)
+        // getLights() returns an immutable collection of all lights currently known to the library..
+        // The objects in this collection are a snapshot of the current state of the lights and will not be updated as
+        // state changes.
         api.getLights().forEach(yeeLight -> {
             
             // To change the colour of the light you would use the setRgb method
@@ -90,6 +89,4 @@ Well at the moment you'll have to build it yourself, I'll try and get this in ma
         });
 ```
 
-YeeApi contains _almost_ all methods supported under the third party protocol.
-
-## TODO Complete this
+YeeApi contains _almost_ all methods supported under the third party protocol. Scenes are not supported.

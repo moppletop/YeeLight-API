@@ -23,8 +23,7 @@ public enum YeeCommandType {
     ADD_CRON("cron_add"),
     DELETE_CRON("cron_del"),
     SET_MUSIC("set_music"),
-    SET_NAME("set_name")
-    ;
+    SET_NAME("set_name");
 
     public static YeeCommandType[] of(String[] methodNames) {
         List<YeeCommandType> commandTypes = new ArrayList<>();

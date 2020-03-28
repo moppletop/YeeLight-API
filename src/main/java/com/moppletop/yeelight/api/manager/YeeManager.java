@@ -3,7 +3,7 @@ package com.moppletop.yeelight.api.manager;
 import com.moppletop.yeelight.api.YeeConfiguration;
 import com.moppletop.yeelight.api.YeeException;
 import com.moppletop.yeelight.api.discovery.DiscoveryUDPListener;
-import com.moppletop.yeelight.api.json.JSONProvider;
+import com.moppletop.yeelight.api.json.JSONSerialiser;
 import com.moppletop.yeelight.api.model.YeeCommand;
 import com.moppletop.yeelight.api.model.YeeLight;
 import com.moppletop.yeelight.api.model.YeeResponse;
@@ -24,16 +24,16 @@ public class YeeManager {
     @Getter
     private final YeeConfiguration configuration;
     @Getter
-    private final JSONProvider jsonProvider;
+    private final JSONSerialiser jsonSerialiser;
 
     private final DiscoveryUDPListener discoveryUDPListener;
 
     @Getter
     private final Map<Integer, YeeLightConnection> lights = new LinkedHashMap<>();
 
-    public YeeManager(YeeConfiguration configuration, JSONProvider jsonProvider) {
+    public YeeManager(YeeConfiguration configuration, JSONSerialiser jsonSerialiser) {
         this.configuration = configuration;
-        this.jsonProvider = jsonProvider;
+        this.jsonSerialiser = jsonSerialiser;
         this.discoveryUDPListener = new DiscoveryUDPListener(this);
     }
 
@@ -66,7 +66,7 @@ public class YeeManager {
     /**
      * Sends a command to a light
      *
-     * @param id the id of the light
+     * @param id      the id of the light
      * @param command the command to send
      */
     @SneakyThrows
@@ -83,7 +83,7 @@ public class YeeManager {
     /**
      * Interprets a response from a light and updates it's internal state if needed
      *
-     * @param light the light the response is for
+     * @param light    the light the response is for
      * @param response the response
      */
     public void readResponse(YeeLight light, YeeResponse response) {
