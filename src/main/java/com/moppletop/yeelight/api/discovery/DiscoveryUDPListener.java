@@ -25,9 +25,9 @@ public class DiscoveryUDPListener implements Runnable, Closeable {
     // The packet read buffer
     private final byte[] buffer = new byte[512];
 
-    // The socket used for sending and receiving multi-cast UDP discovery packets
+    // The socket used for sending and receiving multicast UDP discovery packets
     private DatagramSocket socket;
-    // Marks whether or not the discovery thread is running
+    // Marks whether the discovery thread is running
     private boolean running;
 
     // A lock to prevent multiple threads attempting to bind at the same time when the socket is initialising
@@ -81,7 +81,7 @@ public class DiscoveryUDPListener implements Runnable, Closeable {
 
                 log.debug("Received a UDP packet from {}:{}", packet.getAddress().getHostAddress(), packet.getPort());
 
-                YeeLight light = YeeLight.of(PacketUtil.deserialisePacket(packet.getData()));
+                YeeLight light = YeeLight.of(PacketUtil.deserializePacket(packet.getData()));
                 manager.registerLight(light);
             } catch (Exception ex) {
                 if (running) {

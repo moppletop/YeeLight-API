@@ -1,6 +1,6 @@
 package com.moppletop.yeelight.api;
 
-import com.moppletop.yeelight.api.util.JacksonJSONSerialiser;
+import com.moppletop.yeelight.api.util.JacksonJSONSerializer;
 import com.moppletop.yeelight.api.util.TestUDPServer;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
@@ -26,7 +26,7 @@ public class DiscoveryTest {
 
         api = (YeeApiImpl) new YeeApiBuilder()
                 .configuration(configuration)
-                .jsonSerialiser(JacksonJSONSerialiser.INSTANCE)
+                .jsonSerializer(JacksonJSONSerializer.INSTANCE)
                 .autoDiscovery(false)
                 .build();
         server = new TestUDPServer(configuration.getSearchUdpPort(), configuration.getSearchUdpResponsePort());

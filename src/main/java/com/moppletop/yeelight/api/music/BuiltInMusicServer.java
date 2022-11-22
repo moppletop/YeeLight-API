@@ -47,7 +47,7 @@ public class BuiltInMusicServer implements MusicServer, Runnable, Closeable {
 
     @Override
     public void run() {
-        while (true) {
+        while (!serverSocket.isClosed()) {
             try {
                 Socket socket = serverSocket.accept();
 

@@ -3,15 +3,15 @@ package com.moppletop.yeelight.api.util;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.moppletop.yeelight.api.json.JSONSerialiser;
+import com.moppletop.yeelight.api.json.JSONSerializer;
 
-public class JacksonJSONSerialiser implements JSONSerialiser {
+public class JacksonJSONSerializer implements JSONSerializer {
 
-    public static final JacksonJSONSerialiser INSTANCE = new JacksonJSONSerialiser();
+    public static final JacksonJSONSerializer INSTANCE = new JacksonJSONSerializer();
 
     private final ObjectMapper objectMapper;
 
-    private JacksonJSONSerialiser() {
+    private JacksonJSONSerializer() {
         this.objectMapper = new ObjectMapper();
 
         objectMapper.setVisibility(objectMapper.getSerializationConfig().getDefaultVisibilityChecker()
@@ -25,12 +25,12 @@ public class JacksonJSONSerialiser implements JSONSerialiser {
     }
 
     @Override
-    public String serialise(Object obj) throws Exception {
-        return objectMapper.writeValueAsString(obj);
+    public byte[] serialise(Object obj) throws Exception {
+        return objectMapper.writeValueAsBytes(obj);
     }
 
     @Override
-    public <T> T deserialise(String json, Class<T> classOfT) throws Exception {
+    public <T> T deserialize(byte[] json, Class<T> classOfT) throws Exception {
         return objectMapper.readValue(json, classOfT);
     }
 

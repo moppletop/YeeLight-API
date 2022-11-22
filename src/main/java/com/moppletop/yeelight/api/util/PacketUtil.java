@@ -32,7 +32,7 @@ public class PacketUtil {
         return builder.toString().getBytes();
     }
 
-    public Map<String, String> deserialisePacket(byte[] packetData) {
+    public Map<String, String> deserializePacket(byte[] packetData) {
         Map<String, String> packet = new HashMap<>(32);
 
         String asString = new String(packetData);
@@ -61,8 +61,8 @@ public class PacketUtil {
         return packet;
     }
 
-    // Bit of a terrible hack to get the end of the packet
-    public boolean isEndOfPacket(CharSequence sequence) {
-        return sequence.length() > 4 && sequence.subSequence(sequence.length() - 2, sequence.length()).equals(getNewLine());
+    // A bit of a terrible hack to get the end of the packet
+    public boolean isEndOfPacket(int packet) {
+        return packet == '\n';
     }
 }

@@ -2,20 +2,21 @@ package com.moppletop.yeelight.api;
 
 import com.moppletop.yeelight.api.model.YeeDuration;
 import com.moppletop.yeelight.api.model.YeeLight;
-import com.moppletop.yeelight.api.util.JacksonJSONSerialiser;
+import com.moppletop.yeelight.api.util.JacksonJSONSerializer;
 import com.moppletop.yeelight.api.util.TestTCPServer;
 import lombok.SneakyThrows;
-import org.awaitility.Duration;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.time.Duration;
 
 import static org.awaitility.Awaitility.await;
 
 public class CommandTest {
 
     private final YeeApiImpl api = (YeeApiImpl) new YeeApiBuilder()
-            .jsonSerialiser(JacksonJSONSerialiser.INSTANCE)
+            .jsonSerializer(JacksonJSONSerializer.INSTANCE)
             .autoDiscovery(false)
             .build();
     private final int port = 25569;
@@ -28,7 +29,7 @@ public class CommandTest {
 
     @BeforeEach
     void before() {
-        server = new TestTCPServer(port, api.getManager().getJsonSerialiser());
+        server = new TestTCPServer(port, api.getManager().getJsonSerializer());
     }
 
     @AfterEach
@@ -44,7 +45,7 @@ public class CommandTest {
         api.getManager().registerLight(light);
         api.setTemperature(light.getId(), 765, YeeDuration.instant());
 
-        await().atMost(Duration.FIVE_SECONDS)
+        await().atMost(Duration.ofSeconds(5))
                 .until(() -> light.getTemperature() == 765);
     }
 

@@ -3,7 +3,7 @@ package com.moppletop.yeelight.api.manager;
 import com.moppletop.yeelight.api.YeeConfiguration;
 import com.moppletop.yeelight.api.YeeException;
 import com.moppletop.yeelight.api.discovery.DiscoveryUDPListener;
-import com.moppletop.yeelight.api.json.JSONSerialiser;
+import com.moppletop.yeelight.api.json.JSONSerializer;
 import com.moppletop.yeelight.api.model.YeeCommand;
 import com.moppletop.yeelight.api.model.YeeLight;
 import com.moppletop.yeelight.api.model.YeeResponse;
@@ -24,16 +24,16 @@ public class YeeManager {
     @Getter
     private final YeeConfiguration configuration;
     @Getter
-    private final JSONSerialiser jsonSerialiser;
+    private final JSONSerializer jsonSerializer;
 
     private final DiscoveryUDPListener discoveryUDPListener;
 
     @Getter
     private final Map<Integer, YeeLightConnection> lights = new LinkedHashMap<>();
 
-    public YeeManager(YeeConfiguration configuration, JSONSerialiser jsonSerialiser) {
+    public YeeManager(YeeConfiguration configuration, JSONSerializer jsonSerializer) {
         this.configuration = configuration;
-        this.jsonSerialiser = jsonSerialiser;
+        this.jsonSerializer = jsonSerializer;
         this.discoveryUDPListener = new DiscoveryUDPListener(this);
     }
 
