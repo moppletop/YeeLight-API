@@ -55,6 +55,11 @@ public class PacketUtil {
 
             String value = line.substring(colonIndex);
 
+            // Edge case where on certain bulbs the last value is appended with \r but not \n
+            if (value.charAt(value.length() - 1) == '\r') {
+                value = value.substring(0, value.length() - 1);
+            }
+
             packet.put(key, value);
         }
 

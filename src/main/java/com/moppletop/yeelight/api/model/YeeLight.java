@@ -27,10 +27,10 @@ public class YeeLight implements Cloneable {
                 .powered(isPowered(packet.get("power")))
                 .brightness(parseInt(packet.get("bright")))
                 .colourMode(YeeColourMode.fromId(parseInt(packet.get("color_mode"))))
-                .temperature(parseInt(packet.get("ct")))
+                .temperature(parseInt(packet.getOrDefault("ct", "0")))
                 .rgb(parseInt(packet.get("rgb")))
-                .hue(parseInt(packet.get("hue")))
-                .saturation(parseInt(packet.get("sat")))
+                .hue(parseInt(packet.getOrDefault("hue", "0")))
+                .saturation(parseInt(packet.getOrDefault("sat", "0")))
                 .name(packet.get("name"))
                 .build();
     }
