@@ -101,8 +101,9 @@ public class DiscoveryUDPListener implements Runnable, Closeable {
     private synchronized void ensureSocketConnected() throws IOException {
         synchronized (socketCreationLock) {
             if (socket == null) {
+                YeeConfiguration configuration = manager.getConfiguration();
                 // Here we have to pass in InetAddress.getLocalHost() otherwise the socket will bind to "localhost" not "192.168.0.x"
-                this.socket = new DatagramSocket(manager.getConfiguration().getSearchUdpResponsePort(), InetAddress.getLocalHost());
+                this.socket = new DatagramSocket(configuration.getSearchUdpResponsePort(), configuration.getDiscoveryBindAddress());
             }
         }
     }
